@@ -62,14 +62,6 @@ gameboard = {
         console.log(this.board.map(row => row.join(' | ')).join('\n---------\n'));
     },
 
-    markAndCheck(e) {
-        
-        if (game.getTurn === 0) {
-
-        }
-    }
-
-
 
 }
 
@@ -89,17 +81,14 @@ class Player {
     }
 }
 
-// const newGame = document.querySelector(".new-game");
-// newGame.addEventListener('click', )
-
 
 
 game = {
     constructor(player1, player2) {
         this.player1 = player1;
         this.player2 = player2;
+        this.turn = 0;
     },
-    turn: 0,
     currentPlayer: function() {
         if (this.turn === 0) {
             return player1;
@@ -112,34 +101,67 @@ game = {
         }
     },
     getCurrentPlayer: function() {
-        return this.currentPlayer;
+        return this.currentPlayer();
     },
     getTurn: function() {
         return this.turn;
     },
     setTurn: function() {
-        this.turn = (this.turn + 1);
+        this.turn += 1;
     },
     addEvents: function() {
         const tiles = document.querySelectorAll('.tile');
         tiles.forEach(tile => {
             tile.addEventListener('click', (e) => {
                 if (e.target.innerHTML === '') {
-                    const playerNow = this.currentPlayer();
-                    console.log(playerNow);
+                    const playerNow = this.getCurrentPlayer();
+                    // console.log(playerNow);
                     e.target.innerHTML = playerNow.getMarker();
-                    this.setTurn();
-                }
-            })
-        })
-    },
 
-}
+                    //convert tile ID to row & column
+                    const index = parseInt(e.target.id);
+                    const row = Math.floor(index / 3);
+                    const col = index % 3;
+
+                    //update gameboard
+
+                    if (gameboard.markBoard(row, col, playerNow.getMarker())) {
+                        //check for win or draw
+                        //set timeout to make sure mark appears before alert
+                        setTimeout(() => {
+                        const winner = gameboard.checkWin();
+                        if (winner) {
+                            alert(`${winner} wins!`);
+                        } else if (gameboard.isBoardFull()) {
+                            alert(`It's a draw!`);
+                        } else {
+                        this.setTurn();
+                        }
+                    }, 50);
+                    }
+
+                    // this.setTurn();
+                    // gameboard.markBoard(parseInt(e.target.id) / 3, parseInt(e.target.id) % 3, playerNow.getMarker());
+
+                    // const winner = gameboard.checkWin();
+                    // if (winner) {
+                    //     alert(`${winner} wins!`);
+                    // } else if (this.getTurn() >= 9) {
+                    //     alert(`It's a draw!`);
+                    // }
+                }
+            });
+        });
+    }
+
+};
 
 const player1 = new Player('Player1', 'X');
 const player2 = new Player('Player2', 'O');
 
-game.addEvents();
+const gameInstance = Object.create(game);
+gameInstance.constructor(player1, player2);
+gameInstance.addEvents();
 
 
 
