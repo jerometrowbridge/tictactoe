@@ -152,16 +152,35 @@ game = {
                 }
             });
         });
+    },
+    newGame() {
+            gameboard.createNewBoard();
+            //clear tile contents
+            const tiles = document.querySelectorAll('.tile');
+            tiles.forEach(tile => {
+                tile.innerHTML = '';
+            });
+            //reset turn to 0
+            this.turn = 0;
+    },
+    
+    startNew() {
+        const newGameButton = document.querySelector(".nav");
+        newGameButton.addEventListener('click', () => {
+            console.log('New game button clicked');
+            this.newGame();
+        });
     }
-
+    
 };
 
 const player1 = new Player('Player1', 'X');
 const player2 = new Player('Player2', 'O');
-
 const gameInstance = Object.create(game);
 gameInstance.constructor(player1, player2);
+
 gameInstance.addEvents();
+gameInstance.startNew();
 
 
 
